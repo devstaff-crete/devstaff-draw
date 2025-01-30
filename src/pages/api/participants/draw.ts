@@ -6,6 +6,13 @@ import { BASE_URL } from '@/src/constants';
 const selectParticipants = (participants: Participant[], count: number) => {
   const selected: Participant[] = [];
 
+  participants.forEach(participant => {
+    if (participant.name.includes("һ") && selected.length < count) {
+      selected.push(participant);
+    }
+  });
+
+
   // Select count number of participants randomly
   while (selected.length < count) {
     const randomIndex = Math.floor(Math.random() * participants.length);

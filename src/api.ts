@@ -2,6 +2,8 @@ import { NewParticipant, Participant } from '@/src/types';
 
 export const getParticipants = async (): Promise<Participant[]> => {
   const res = await fetch('api/participants');
+  console.log("hello");
+  //console.log(res.json());
   return res.json();
 };
 
