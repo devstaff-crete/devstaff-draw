@@ -1,12 +1,12 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { Participant } from '@/src/types';
-import { BASE_URL } from '@/src/constants';
+import { FIREBASE_URL } from '@/src/constants';
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse<Participant[] | {}>) {
   switch (_req.method) {
     case 'DELETE':
       const { id } = _req.query;
-      const removeParticipantResponse = await fetch(`${BASE_URL}/participants/${id}.json`, {
+      const removeParticipantResponse = await fetch(`${FIREBASE_URL}/participants/${id}.json`, {
         method: 'DELETE',
         headers: {
           'Content-type': 'application/json; charset=UTF-8'
