@@ -90,7 +90,6 @@ const Participate = () => {
                   required: 'This field is required',
                   pattern: { value: emailRegex(), message: 'Please provide a valid email address' }
                 })}
-                sx={{ width: '260px' }}
               />
               <ErrorMessage>{errors.email?.message}</ErrorMessage>
             </div>
@@ -101,7 +100,6 @@ const Participate = () => {
                 aria-label="full name input field"
                 placeholder="Full name"
                 {...register('fullName', { required: 'This field is required' })}
-                sx={{ width: '260px' }}
               />
               <ErrorMessage>{errors.fullName?.message}</ErrorMessage>
             </div>
