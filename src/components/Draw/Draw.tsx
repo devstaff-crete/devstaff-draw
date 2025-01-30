@@ -3,9 +3,10 @@ import { Participant } from '@/src/types';
 import { draw as drawFn, getParticipants } from '@/src/api';
 import { motion, useAnimationControls } from 'framer-motion';
 import { getViewportSize, stringToHSL } from '@/src/utils';
-import { Text, Box } from '@mantine/core';
+import { Text, Box, Image } from '@mantine/core';
 import Head from 'next/head';
 import DrawForm from './DrawForm';
+import { useState } from 'react';
 
 const CARD_WIDTH = 200;
 const CARD_HEIGHT = 280;
@@ -32,6 +33,7 @@ const selectRandomPointOutsideViewport = () => {
 
 const Draw = () => {
   const controls = useAnimationControls();
+  const devStaffCardControls = useAnimationControls();
 
   const {
     mutate: draw,
@@ -48,11 +50,21 @@ const Draw = () => {
   if (!participants) return null;
 
   const handleCardEnter = (index: number) => {
+    devStaffCardControls.start(i =>
+      i === index ? { scale: 1, transition: { duration: 0.2, delay: i * 0.1 } } : {}
+    );
     controls.start(i => (i === index ? { scale: 1, transition: { duration: 0.2, delay: i * 0.1 } } : {}));
   };
 
   const handleDraw = async (selectedParticipantIds: string[]) => {
     if (!participants) return;
+
+    // Move card with DevStaff logo outside of the viewpoint
+    await devStaffCardControls.start({
+      ...selectRandomPointOutsideViewport(),
+      // Calculate delay so it takes 3 seconds to move all cards
+      transition: { delay: 0, duration: 0.3 }
+    });
 
     // Move all non-selected cards outside of the viewport
     await controls.start(i =>
@@ -142,6 +154,38 @@ const Draw = () => {
             <Text>{participant.name}</Text>
           </motion.div>
         ))}
+        <motion.div
+          custom={0}
+          initial={{
+            ...selectRandomPointInViewport(),
+            rotate: getRandomAngle(15),
+            scale: 0
+          }}
+          animate={devStaffCardControls}
+          onViewportEnter={() => handleCardEnter(0)}
+          viewport={{ once: true }}
+          style={{
+            backgroundColor: '#e9ecef',
+            width: `${CARD_WIDTH}px`,
+            height: `${CARD_HEIGHT}px`,
+            fontWeight: 'bold',
+            borderRadius: '8px',
+            position: 'absolute',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+            overflow: 'hidden'
+          }}
+        >
+          <Image
+            src="/devstaff-logo.svg"
+            alt="Card with DevStaff logo"
+            style={{
+              paddingInline: '16px'
+            }}
+          />
+        </motion.div>
       </Box>
 
       {participants && participants.length > 0 && !isDrawLoading && !isDrawSuccess ? (
