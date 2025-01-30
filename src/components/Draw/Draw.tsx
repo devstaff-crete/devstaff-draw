@@ -16,9 +16,16 @@ const getRandomAngle = (maxAngle: number) => Math.random() * maxAngle * (Math.ra
 const selectRandomPointInViewport = () => {
   const { width, height } = getViewportSize();
 
+  let x = (Math.random() - 0.5) * (width - CARD_WIDTH);
+  let y = (Math.random() - 0.5) * (height - CARD_HEIGHT);
+  if (x < 0 && x > -CARD_WIDTH && !(y > CARD_HEIGHT || y < -CARD_HEIGHT)) {
+    x -= CARD_WIDTH;
+  } else if (x > 0 && x < CARD_WIDTH && !(y > CARD_HEIGHT || y < -CARD_HEIGHT)) {
+    x += CARD_WIDTH;
+  }
   return {
-    x: (Math.random() - 0.5) * (width - CARD_WIDTH),
-    y: (Math.random() - 0.5) * (height - CARD_HEIGHT)
+    x,
+    y
   };
 };
 
@@ -157,8 +164,9 @@ const Draw = () => {
         <motion.div
           custom={0}
           initial={{
-            ...selectRandomPointInViewport(),
-            rotate: getRandomAngle(15),
+            x: 0,
+            y: 0,
+            rotate: 0,
             scale: 0
           }}
           animate={devStaffCardControls}
