@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Participant } from '@/src/types';
-import { BASE_URL } from '@/src/constants';
+import { FIREBASE_URL } from '@/src/constants';
 
 export const fetchParticipants = async () => {
-  const participantsResponse = await fetch(`${BASE_URL}/participants.json`);
+  const participantsResponse = await fetch(`${FIREBASE_URL}/participants.json`);
   const participantsObj = (await participantsResponse.json()) as Record<string, Participant> | null;
   if (!participantsObj) {
     return [];
@@ -37,7 +37,7 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
         isWinner: false
       } as Omit<Participant, 'id'>;
 
-      const newParticipantResponse = await fetch(`${BASE_URL}/participants.json`, {
+      const newParticipantResponse = await fetch(`${FIREBASE_URL}/participants.json`, {
         method: 'POST',
         headers: {
           'Content-type': 'application/json; charset=UTF-8'

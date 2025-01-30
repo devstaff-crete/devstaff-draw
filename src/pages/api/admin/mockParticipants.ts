@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { BASE_URL } from '@/src/constants';
+import { FIREBASE_URL } from '@/src/constants';
 import { Participant } from '@/src/types';
 
 function sleep(ms: number) {
@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       );
 
       for (const participant of mockedParticipants) {
-        await fetch(`${BASE_URL}/participants.json`, {
+        await fetch(`${FIREBASE_URL}/participants.json`, {
           method: 'POST',
           headers: {
             'Content-type': 'application/json; charset=UTF-8'
