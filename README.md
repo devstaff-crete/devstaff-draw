@@ -35,6 +35,12 @@ For this project, the api can be found under https://devstaff-draw-default-rtdb.
 | POST             | /urlBase/participants.json                     |
 | PUT/PATCH/DELETE | /urlBase/participants/1.json                   |
 
+
+## Admin page
+
+To access the admin page, please use the password provided in the `.env`
+
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
