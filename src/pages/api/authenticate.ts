@@ -5,7 +5,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'POST':
       const { password } = JSON.parse(req.body);
 
-      if (password === '54321') {
+      if (password === process.env.PASSWORD) {
         res.status(200).json({});
       } else {
         res.status(401).json({});

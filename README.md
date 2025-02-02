@@ -23,7 +23,7 @@ This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-opti
 ## API 
 
 For the API we are using the [Firebase REST API](https://firebase.google.com/docs/database/rest/start).  
-For this project, the api can be found under https://devstaff-draw-default-rtdb.europe-west1.firebasedatabase.app
+For this project, a Firebase Realtime Database url should be created and added under FIREBASE_URL variable in .env file.
 
 
 | Method	          | Endpoint 	                                     |
@@ -34,6 +34,12 @@ For this project, the api can be found under https://devstaff-draw-default-rtdb.
 | GET paginate     | /urlBase/participants.json?_page=2&_limit=10   |
 | POST             | /urlBase/participants.json                     |
 | PUT/PATCH/DELETE | /urlBase/participants/1.json                   |
+
+
+## Admin page
+
+To access the admin page, please use the password provided in the `.env`
+
 
 ## Learn More
 
