@@ -3,8 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AppProps } from 'next/app';
 import { Cabin } from '@next/font/google';
+import { MantineProvider, ColorSchemeProvider, ColorScheme } from '@mantine/core';
 import { useState } from 'react';
-import { MantineProvider, PasswordInput, ColorSchemeProvider, ColorScheme } from '@mantine/core';
 
 const cabin = Cabin({
   subsets: ['latin']

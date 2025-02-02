@@ -87,6 +87,7 @@ const Layout = ({ children }: Props) => {
 
         <Title>DevStaff Draw</Title>
       </Header>
+      
       <Main>{children}</Main>
 
       <FloatingThemeToggleButton />

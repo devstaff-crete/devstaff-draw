@@ -41,9 +41,7 @@ const ShareDrawModal = ({ open, onClose }: Props) => {
             priority
           />
 
-          <Text size="xl" my="4" color="grey">
-            OR
-          </Text>
+          <Text size="xl" my="4" color="grey">OR</Text>
 
           <Anchor href={drawUrlFull} target="_blank" rel="noreferrer">
             <DrawUrlText>{drawUrl}</DrawUrlText>
