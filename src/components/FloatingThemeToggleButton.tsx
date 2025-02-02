@@ -15,7 +15,7 @@ const FloatingButton = styled.div<FloatingButtonProps>`
   z-index: 10;
   border-radius: 50%;
   padding: 10px;
-  background-color: ${props => (props.dark ? Colors.colorSecondary : Colors.grey)};
+  background-color: ${props => Colors.colorSecondary};
 
   @media (min-width: 768px) {
     display: none; /* Hide on larger screens */

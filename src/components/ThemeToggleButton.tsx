@@ -1,6 +1,5 @@
 import { ActionIcon, Tooltip, useMantineColorScheme } from '@mantine/core';
 import React from 'react';
-import { Colors } from '../constants';
 import { useMediaQuery } from '@mantine/hooks';
 import SvgComponent from './SvgComponent';
 import { ColorScheme } from '@mantine/core';
@@ -11,7 +10,7 @@ const ThemeToggleButton = ({ className }: { className?: string }) => {
   const { colorScheme, toggleColorScheme } = useMantineColorScheme();
   const isDarkTheme = colorScheme === 'dark';
 
-  const tooltipText: TooltipTextFormat = `Enable ${colorScheme} theme`;
+  const tooltipText: TooltipTextFormat = `Enable ${isDarkTheme ? 'light' : 'dark'} theme`;
 
   const isLargeScreen = useMediaQuery('(min-width: 768px)');
   const iconConfig = {
@@ -19,12 +18,12 @@ const ThemeToggleButton = ({ className }: { className?: string }) => {
       ? {
           file: '/sun.svg',
           altText: 'Sun icon',
-          fill: '#F4AB52FF'
+          color: '#F4AB52FF'
         }
       : {
           file: '/moon.svg',
           altText: 'Moon icon',
-          fill: Colors.colorSecondary
+          color: '#546bab'
         }),
     size: isLargeScreen ? 28 : 32
   };
@@ -53,6 +52,8 @@ const ThemeToggleButton = ({ className }: { className?: string }) => {
     )
   };
 
+  const selectedIcon = isDarkTheme ? icons.light : icons.dark;
+
   return (
     <Tooltip label={tooltipText}>
       <ActionIcon
@@ -61,8 +62,8 @@ const ThemeToggleButton = ({ className }: { className?: string }) => {
         size={actionIconSize}
         onClick={() => toggleColorScheme()}
       >
-        <SvgComponent size={iconConfig.size} fill={iconConfig.fill}>
-          {icons[colorScheme]}
+        <SvgComponent size={iconConfig.size} fill={iconConfig.color}>
+          {selectedIcon}
         </SvgComponent>
       </ActionIcon>
     </Tooltip>
