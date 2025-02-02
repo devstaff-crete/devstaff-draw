@@ -3,6 +3,8 @@ import Image from 'next/image';
 import styled from 'styled-components';
 import { Colors } from '@/src/constants';
 import Link from 'next/link';
+import ThemeToggleButton from './ThemeToggleButton';
+import FloatingThemeToggleButton from './FloatingThemeToggleButton';
 
 type Props = {
   children?: React.ReactNode;
@@ -26,9 +28,19 @@ const Main = styled.main`
 const Header = styled.div`
   padding: 24px;
   background: ${Colors.headerBg};
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
   align-items: center;
-  justify-content: space-between;
+  grid-gap: 1rem;
+`;
+
+const StyledThemeToggleButton = styled(ThemeToggleButton)`
+  grid-column: 3;
+  display: none; /* Hide by default */
+
+  @media (min-width: 769px) {
+    display: block; /* Show on larger screens */
+  }
 `;
 
 const Title = styled.span`
@@ -38,6 +50,7 @@ const Title = styled.span`
   background-clip: text;
   -webkit-background-clip: text;
   color: transparent;
+  grid-column: 4;
 `;
 
 const Footer = styled.div`
@@ -69,10 +82,14 @@ const Layout = ({ children }: Props) => {
         <Link href="/">
           <Image src="/devstaff-logo.webp" alt="Devstaff logo" width={153} height={61} priority />
         </Link>
+
+        <StyledThemeToggleButton />
+
         <Title>DevStaff Draw</Title>
       </Header>
-
       <Main>{children}</Main>
+
+      <FloatingThemeToggleButton />
 
       <Footer>
         <Social>
