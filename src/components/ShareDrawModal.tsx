@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Anchor, Modal, Stack, Text } from '@mantine/core';
+import { Anchor, Modal, Stack, Text, useMantineColorScheme } from '@mantine/core';
 import Image from 'next/image';
 
 type Props = {
@@ -10,12 +10,15 @@ type Props = {
 const DrawUrlText = styled.text`
   font-weight: bold;
   font-size: 2rem;
-  margin-top: 2rem
+  margin-top: 2rem;
 `;
 
 const ShareDrawModal = ({ open, onClose }: Props) => {
   const drawUrlFull = 'https://devstaff.gr/draw';
   const drawUrl = 'devstaff.gr/draw';
+
+  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
+  const qrCodeFile = colorScheme === 'dark' ? '/qrcode-white.webp' : '/qrcode.webp';
 
   return (
     <>
@@ -31,14 +34,16 @@ const ShareDrawModal = ({ open, onClose }: Props) => {
       >
         <Stack align="center" spacing={16}>
           <Image
-            src="/qrcode.webp"
+            src={qrCodeFile}
             alt="QR code for sharing the DevStaff Draw website"
             width={370}
             height={370}
             priority
           />
 
-          <Text size="xl" my="4" color="grey">OR</Text>
+          <Text size="xl" my="4" color="grey">
+            OR
+          </Text>
 
           <Anchor href={drawUrlFull} target="_blank" rel="noreferrer">
             <DrawUrlText>{drawUrl}</DrawUrlText>
