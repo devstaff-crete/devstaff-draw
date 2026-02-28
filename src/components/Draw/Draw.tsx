@@ -3,7 +3,7 @@ import { Participant } from '@/src/types';
 import { draw as drawFn, getParticipants } from '@/src/api';
 import { motion, useAnimationControls } from 'framer-motion';
 import { getViewportSize, stringToHSL } from '@/src/utils';
-import { Text, Box, Image } from '@mantine/core';
+import { Text, Box, Image, useMantineTheme } from '@mantine/core';
 import Head from 'next/head';
 import DrawForm from './DrawForm';
 import { useState } from 'react';
@@ -39,18 +39,22 @@ const selectRandomPointOutsideViewport = () => {
 };
 
 const Draw = () => {
+  const theme = useMantineTheme();
   const controls = useAnimationControls();
   const devStaffCardControls = useAnimationControls();
 
   const {
     mutate: draw,
-    isLoading: isDrawLoading,
+    isPending: isDrawLoading,
     isSuccess: isDrawSuccess
-  } = useMutation((count: number) => drawFn(count), {
+  } = useMutation({
+    mutationFn: (count: number) => drawFn(count),
     onSuccess: ids => handleDraw(ids)
   });
 
-  const { data: participants } = useQuery<Participant[]>(['participants'], getParticipants, {
+  const { data: participants } = useQuery<Participant[]>({
+    queryKey: ['participants'],
+    queryFn: getParticipants,
     refetchInterval: isDrawLoading || isDrawSuccess ? 0 : 1000
   });
 
@@ -114,7 +118,7 @@ const Draw = () => {
       </Head>
 
       <Box
-        sx={theme => ({
+        style={{
           padding: 0,
           backgroundColor: theme.colors.dark[7],
           height: '100vh',
@@ -124,10 +128,10 @@ const Draw = () => {
           justifyContent: 'center',
           alignItems: 'center',
           gap: '16px'
-        })}
+        }}
       >
         {participants.length === 0 ? (
-          <Text size="xl" color="white" weight="bold">
+          <Text size="xl" c="white" fw="bold">
             Waiting for participants
           </Text>
         ) : null}
@@ -198,11 +202,12 @@ const Draw = () => {
 
       {participants && participants.length > 0 && !isDrawLoading && !isDrawSuccess ? (
         <Box
-          sx={() => ({
+          style={{
             position: 'fixed',
             bottom: '20px',
-            right: '20px'
-          })}
+            right: '20px',
+            zIndex: 1000
+          }}
         >
           <DrawForm onSubmit={draw} />
         </Box>

@@ -34,7 +34,8 @@ const RequireAuth = ({ children }: Props) => {
   const { register, handleSubmit, reset } = useForm<{ password: string }>({
     defaultValues: { password: '' }
   });
-  const { mutate, isLoading, isSuccess } = useMutation(authenticate, {
+  const { mutate, isPending: isLoading, isSuccess } = useMutation({
+    mutationFn: authenticate,
     onError: () => reset()
   });
 

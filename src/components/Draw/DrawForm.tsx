@@ -1,4 +1,4 @@
-import { ActionIcon, Button, Group, Stack, Text } from '@mantine/core';
+import { ActionIcon, Button, Group, Stack, Text, useMantineTheme } from '@mantine/core';
 import { useState } from 'react';
 import { Colors } from '@/src/constants';
 
@@ -8,26 +8,27 @@ type Props = {
 
 const DrawForm = ({ onSubmit }: Props) => {
   const [counter, setCounter] = useState(2);
+  const theme = useMantineTheme();
 
   return (
     <Stack
-      sx={theme => ({
+      style={{
         backgroundColor: theme.colors.gray[2],
         padding: theme.spacing.md,
         borderRadius: theme.radius.md
-      })}
+      }}
     >
       <Group>
         <ActionIcon onClick={() => setCounter(prev => prev - 1)}>
-          <Text size="xl" weight="bold">
+          <Text size="xl" fw="bold">
             -
           </Text>
         </ActionIcon>
-        <Text size="lg" weight="bold">
+        <Text size="lg" fw="bold">
           {counter}
         </Text>
         <ActionIcon onClick={() => setCounter(prev => prev + 1)}>
-          <Text size="xl" weight="bold">
+          <Text size="xl" fw="bold">
             +
           </Text>
         </ActionIcon>
@@ -35,12 +36,12 @@ const DrawForm = ({ onSubmit }: Props) => {
 
       <Button
         onClick={() => onSubmit(counter)}
-        sx={{
-          borderColor: `${Colors.colorPrimary}`,
+        style={{
+          borderColor: Colors.colorPrimary,
           background: 'white',
-          color: `${Colors.colorPrimary}`,
-          ':hover': { background: `${Colors.colorPrimary}`, color: 'white' }
+          color: Colors.colorPrimary
         }}
+        variant="default"
       >
         Draw
       </Button>

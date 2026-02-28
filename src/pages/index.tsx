@@ -7,7 +7,7 @@ import { useDisclosure } from '@mantine/hooks';
 import {  Text } from '@mantine/core';
 import ShareDrawModal from '@/src/components/ShareDrawModal';
 
-const Button = styled.button<{ buttonType: 'primary' | 'secondary' }>`
+const Button = styled.button<{ $buttonType: 'primary' | 'secondary' }>`
   width: 90vw;
   max-width: 400px;
   border-radius: 10px;
@@ -17,10 +17,10 @@ const Button = styled.button<{ buttonType: 'primary' | 'secondary' }>`
   font-size: 1.375rem;
   color: white;
   cursor: pointer;
-  background-color: ${({ buttonType }) =>
-    buttonType === 'primary' ? Colors.colorPrimary : Colors.colorSecondary};
+  background-color: ${({ $buttonType }) =>
+    $buttonType === 'primary' ? Colors.colorPrimary : Colors.colorSecondary};
   ${props =>
-    props.buttonType === 'primary' &&
+    props.$buttonType === 'primary' &&
     css`
       margin-bottom: 5px;
     `}
@@ -60,10 +60,10 @@ const Home = () => {
       <Layout>
         <Wrapper>
           <Link href="/participate">
-            <Button buttonType="primary">Participate</Button>
+            <Button $buttonType="primary">Participate</Button>
           </Link>
           <Link href="/listing">
-            <Button buttonType="secondary">List</Button>
+            <Button $buttonType="secondary">List</Button>
           </Link>
 
           <ShareButton onClick={open}>

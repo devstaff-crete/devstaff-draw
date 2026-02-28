@@ -2,7 +2,7 @@ import { Button, Stack, TextInput } from '@mantine/core';
 import { ReactElement, ReactNode } from 'react';
 import { useRouter } from 'next/router';
 import { useMutation } from '@tanstack/react-query';
-import { registerNewParticipant } from '@/src/api';
+import { registerNewParticipant, RegistrationError } from '@/src/api';
 import { useForm } from 'react-hook-form';
 import { NewParticipant } from '@/src/types';
 import { Colors, emailRegex } from '@/src/constants';
@@ -47,18 +47,24 @@ const Participate = () => {
     formState: { errors }
   } = useForm<Inputs>();
 
-  const { mutate: registerParticipant, isLoading: isRegisterParticipantLoading } = useMutation(
-    ['newParticipant'],
-    registerNewParticipant,
-    {
-      onSuccess: () => {
-        router.push('/listing');
-      },
-      onError: () => {
-        alert('Email already registered');
-      }
+  const registerMutation = useMutation({
+    mutationFn: registerNewParticipant,
+    onSuccess: () => {
+      router.push('/listing');
+    },
+    onError: (error: unknown) => {
+      const message =
+        error instanceof RegistrationError && error.status === 400
+          ? 'Email already registered'
+          : error instanceof RegistrationError && error.status === 503
+            ? 'Service unavailable. Please configure FIREBASE_URL in .env'
+            : 'Something went wrong. Please try again.';
+      alert(message);
     }
-  );
+  });
+  const { mutate: registerParticipant } = registerMutation;
+  const isRegisterParticipantLoading =
+    (registerMutation as { isPending?: boolean }).isPending ?? false;
 
   return (
     <>
@@ -68,7 +74,7 @@ const Participate = () => {
       </Head>
 
       <Layout>
-        <Stack sx={{ alignItems: 'center' }} spacing={8}>
+        <Stack style={{ alignItems: 'center', gap: 8 }}>
           <h2>Participate</h2>
           <StyledParagraph>Fill in your contact details and get a chance to win!</StyledParagraph>
           <StyledForm
@@ -107,13 +113,12 @@ const Participate = () => {
             <Button
               type="submit"
               loading={isRegisterParticipantLoading}
-              sx={{
+              style={{
                 width: '260px',
                 marginTop: '22px',
-                borderColor: `${Colors.colorPrimary}`,
+                borderColor: Colors.colorPrimary,
                 background: 'white',
-                color: `${Colors.colorPrimary}`,
-                ':hover': { background: `${Colors.colorPrimary}`, color: 'white' }
+                color: Colors.colorPrimary
               }}
             >
               Participate

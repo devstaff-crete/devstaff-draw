@@ -25,11 +25,8 @@ const ShareDrawModal = ({ open, onClose }: Props) => {
         centered
         title="Participate in the draw"
         radius={0}
-        transition="fade"
-        transitionDuration={600}
-        transitionTimingFunction="ease"
       >
-        <Stack align="center" spacing={16}>
+        <Stack align="center" gap={16}>
           <Image
             src="/qrcode.webp"
             alt="QR code for sharing the DevStaff Draw website"
@@ -38,7 +35,7 @@ const ShareDrawModal = ({ open, onClose }: Props) => {
             priority
           />
 
-          <Text size="xl" my="4" color="grey">OR</Text>
+          <Text size="xl" my="md" c="dimmed">OR</Text>
 
           <Anchor href={drawUrlFull} target="_blank" rel="noreferrer">
             <DrawUrlText>{drawUrl}</DrawUrlText>

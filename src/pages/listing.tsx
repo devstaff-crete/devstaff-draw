@@ -26,9 +26,11 @@ const groupParticipantsBasedOnDrawResult = (
 const Listing = () => {
   const { data, isSuccess } = useQuery<
     Participant[],
-    unknown,
+    Error,
     { winners: Participant[]; participants: Participant[] }
-  >(['participants'], getParticipants, {
+  >({
+    queryKey: ['participants'],
+    queryFn: getParticipants,
     refetchInterval: 1500,
     select: data => {
       const [winners, losers] = groupParticipantsBasedOnDrawResult(data);

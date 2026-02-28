@@ -22,9 +22,13 @@ const StyledTable = styled(Table)`
 `;
 
 const Admin = () => {
-  const { data, isSuccess, refetch } = useQuery<Participant[]>(['participants'], getParticipants);
+  const { data, isSuccess, refetch } = useQuery<Participant[]>({
+    queryKey: ['participants'],
+    queryFn: getParticipants
+  });
 
-  const { mutate: newDrawMutation } = useMutation(newDraw, {
+  const { mutate: newDrawMutation } = useMutation({
+    mutationFn: newDraw,
     onSuccess: () => {
       void refetch();
     },
@@ -33,7 +37,8 @@ const Admin = () => {
     }
   });
 
-  const { mutate: removeParticipantMutation } = useMutation(removeParticipant, {
+  const { mutate: removeParticipantMutation } = useMutation({
+    mutationFn: removeParticipant,
     onSuccess: () => {
       void refetch();
     },
@@ -42,7 +47,8 @@ const Admin = () => {
     }
   });
 
-  const { mutate: generateParticipantsMutation } = useMutation(generateParticipants, {
+  const { mutate: generateParticipantsMutation } = useMutation({
+    mutationFn: generateParticipants,
     onSuccess: () => {
       void refetch();
     },
@@ -60,10 +66,10 @@ const Admin = () => {
       <Wrapper>
         <div>No participants yet</div>
         <Button
-          sx={{
+          style={{
             width: '200px',
             margin: '22px',
-            background: `${Colors.colorSecondary}`,
+            background: Colors.colorSecondary,
             color: 'white'
           }}
           onClick={() => generateParticipantsMutation()}
@@ -87,10 +93,10 @@ const Admin = () => {
     <Wrapper>
       <ButtonsWrapper>
         <Button
-          sx={{
+          style={{
             width: '200px',
             margin: '22px',
-            background: `${Colors.colorPrimary}`,
+            background: Colors.colorPrimary,
             color: 'white'
           }}
           onClick={onNewDrawClick}
@@ -98,10 +104,10 @@ const Admin = () => {
           NEW DRAW
         </Button>
         <Button
-          sx={{
+          style={{
             width: '200px',
             margin: '22px',
-            background: `${Colors.colorSecondary}`,
+            background: Colors.colorSecondary,
             color: 'white'
           }}
           onClick={() => generateParticipantsMutation()}
@@ -130,7 +136,7 @@ const Admin = () => {
               <td>{participant.participationTime}</td>
               <td>
                 <Button
-                  sx={{
+                  style={{
                     background: 'indianred',
                     color: 'white',
                     marginRight: '10px'

@@ -2,7 +2,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { Participant } from '@/src/types';
 import { FIREBASE_URL } from '@/src/constants';
 
-export const fetchParticipants = async () => {
+export const fetchParticipants = async (): Promise<Participant[]> => {
+  if (!FIREBASE_URL) {
+    return [];
+  }
   const participantsResponse = await fetch(`${FIREBASE_URL}/participants.json`);
   const participantsObj = (await participantsResponse.json()) as Record<string, Participant> | null;
   if (!participantsObj) {
@@ -16,6 +19,9 @@ export const fetchParticipants = async () => {
 };
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse<Participant[] | {}>) {
+  if (!FIREBASE_URL) {
+    return res.status(503).json({ message: 'Database not configured. Set FIREBASE_URL in .env' });
+  }
   switch (_req.method) {
     case 'GET': {
       // Retrieve all the participants
@@ -25,14 +31,17 @@ export default async function handler(_req: NextApiRequest, res: NextApiResponse
     }
     case 'POST': {
       const participants = await fetchParticipants();
-
-      if (participants.some(participant => participant.email === JSON.parse(_req.body).email)) {
+      const body = typeof _req.body === 'string' ? JSON.parse(_req.body) : _req.body;
+      if (!body?.email) {
+        return res.status(400).json({ message: 'Invalid request body' });
+      }
+      if (participants.some(participant => participant.email === body.email)) {
         return res.status(400).json({ message: 'Participant already exists' });
       }
 
       // Create a new participant
       const newParticipant = {
-        ...JSON.parse(_req.body),
+        ...body,
         participationTime: new Date(),
         isWinner: false
       } as Omit<Participant, 'id'>;
