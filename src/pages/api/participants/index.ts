@@ -1,6 +1,6 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import { Participant } from '@/src/types';
 import { FIREBASE_URL } from '@/src/constants';
+import { Participant } from '@/src/types';
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export const fetchParticipants = async (): Promise<Participant[]> => {
   if (!FIREBASE_URL) {
@@ -12,10 +12,14 @@ export const fetchParticipants = async (): Promise<Participant[]> => {
     return [];
   }
 
-  return Object.keys(participantsObj).map(key => ({
-    ...participantsObj[key],
-    id: key
-  }));
+  return Object.keys(participantsObj).map(key => {
+    const node = participantsObj[key];
+    return {
+      ...node,
+      id: key,
+      isWinner: node?.isWinner === true
+    };
+  });
 };
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse<Participant[] | {}>) {

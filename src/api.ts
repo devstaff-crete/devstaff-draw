@@ -40,12 +40,13 @@ export const newDraw = async () => {
   return res.json();
 };
 
-export const generateParticipants = async (): Promise<Response> => {
+export const generateParticipants = async (): Promise<{ success: boolean }> => {
   const res = await fetch('/api/admin/mockParticipants', {
     method: 'POST'
   });
-
-  return res.json();
+  const data = (await res.json()) as { success?: boolean };
+  if (!res.ok) throw new Error('Failed to generate mock participants');
+  return data as { success: boolean };
 };
 
 export const removeParticipant = async (id: string): Promise<Response> => {

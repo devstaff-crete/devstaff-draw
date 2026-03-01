@@ -2,16 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { FIREBASE_URL } from '@/src/constants';
 import { Participant } from '@/src/types';
 
-function sleep(ms: number) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-const randomMS = (min = 0, max = 1500) => Math.floor(Math.random() * (max - min)) + min;
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse<{ success: boolean } | {}>) {
   switch (req.method) {
-    case 'POST':
-      // Create a new participant
+    case 'POST': {
       const mockedParticipants = Array.from(Array(50).keys()).map(
         (i): Omit<Participant, 'id'> => ({
           name: `test ${i} name`,
@@ -21,19 +14,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         })
       );
 
-      for (const participant of mockedParticipants) {
-        await fetch(`${FIREBASE_URL}/participants.json`, {
-          method: 'POST',
-          headers: {
-            'Content-type': 'application/json; charset=UTF-8'
-          },
-          body: JSON.stringify({ ...participant, participationTime: new Date().toISOString() })
-        });
-        await sleep(randomMS());
-      }
+      await Promise.all(
+        mockedParticipants.map(participant =>
+          fetch(`${FIREBASE_URL}/participants.json`, {
+            method: 'POST',
+            headers: {
+              'Content-type': 'application/json; charset=UTF-8'
+            },
+            body: JSON.stringify({ ...participant, participationTime: new Date().toISOString() })
+          })
+        )
+      );
 
       res.status(200).json({ success: true });
       break;
+    }
     default:
       res.status(405).json({});
   }
