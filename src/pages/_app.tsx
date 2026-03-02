@@ -1,8 +1,9 @@
+import '@mantine/core/styles.css';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AppProps } from 'next/app';
-import { Cabin } from '@next/font/google';
+import { Cabin } from 'next/font/google';
 import { MantineProvider, PasswordInput } from '@mantine/core';
 
 const cabin = Cabin({
@@ -14,11 +15,8 @@ export default function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
+      defaultColorScheme="light"
       theme={{
-        /** Put your mantine theme override here */
-        colorScheme: 'light',
         components: {
           TextInput: {
             styles: {
