@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { Participant } from '@/src/types';
 import { draw as drawFn, getParticipants } from '@/src/api';
-import { motion, useAnimationControls } from 'framer-motion';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import { getInitials, getViewportSize, stringToHSL } from '@/src/utils';
 import { Box, Image, Text, useMantineTheme } from '@mantine/core';
 import Head from 'next/head';
@@ -31,12 +31,11 @@ const ParticipantCard = styled(motion.div)<{ $bg: string }>`
   will-change: transform;
   backface-visibility: hidden;
   -webkit-font-smoothing: antialiased;
-  transform: translateZ(0);
-  contain: layout style paint;
-  box-shadow:
-    0 25px 50px -12px rgba(0, 0, 0, 0.2),
-    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
-  transition: box-shadow 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translate3d(0, 0, 0);
+  contain: strict;
+  isolation: isolate;
+  /* Lighter shadow to reduce paint cost during animation */
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.25);
 
   &::before {
     content: '';
@@ -44,9 +43,8 @@ const ParticipantCard = styled(motion.div)<{ $bg: string }>`
     inset: 0;
     background: radial-gradient(
       ellipse 70% 50% at 50% 50%,
-      rgba(0, 0, 0, 0.35) 0%,
-      rgba(0, 0, 0, 0.08) 70%,
-      transparent 100%
+      rgba(0, 0, 0, 0.3) 0%,
+      transparent 65%
     );
     pointer-events: none;
   }
@@ -59,7 +57,7 @@ const CardAvatar = styled.span`
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -70,7 +68,7 @@ const CardAvatar = styled.span`
   text-transform: uppercase;
   letter-spacing: 0.03em;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
+  /* No backdrop-filter: avoids expensive compositing during card animation */
 `;
 
 const CardName = styled.span`
@@ -100,6 +98,7 @@ const DevStaffLogo = styled(motion.div)`
   justify-content: center;
   will-change: transform;
   backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 
   img {
     width: clamp(140px, 28vw, 200px);
@@ -127,9 +126,10 @@ const WinnersTitle = styled(motion.h1)`
 
 const getRandomAngle = (maxAngle: number) => Math.random() * maxAngle * (Math.random() > 0.5 ? 1 : -1);
 
-const SMOOTH_EASE = [0.16, 1, 0.3, 1] as const; // ease-out-quart — gentler deceleration
+const SMOOTH_EASE = [0.16, 1, 0.3, 1] as const;
 const SMOOTH_SPRING = { type: 'spring' as const, stiffness: 200, damping: 28, mass: 0.8 };
 const SOFT_SPRING = { type: 'spring' as const, stiffness: 140, damping: 24, mass: 1 };
+const INSTANT = { type: 'tween' as const, duration: 0 };
 
 const selectRandomPointInViewport = () => {
   const { width, height } = getViewportSize();
@@ -158,6 +158,7 @@ const selectRandomPointOutsideViewport = () => {
 
 const Draw = () => {
   const theme = useMantineTheme();
+  const reduceMotion = useReducedMotion();
   const controls = useAnimationControls();
   const devStaffCardControls = useAnimationControls();
 
@@ -179,44 +180,40 @@ const Draw = () => {
   if (!participants) return null;
 
   const handleCardEnter = (index: number) => {
-    devStaffCardControls.start(i =>
-      i === index ? { scale: 1, transition: { ...SOFT_SPRING, delay: i * 0.06 } } : {}
-    );
-    controls.start(i => (i === index ? { scale: 1, transition: { ...SOFT_SPRING, delay: i * 0.06 } } : {}));
+    const transition = reduceMotion ? INSTANT : { ...SOFT_SPRING, delay: index * 0.06 };
+    devStaffCardControls.start(i => (i === index ? { scale: 1, transition } : {}));
+    controls.start(i => (i === index ? { scale: 1, transition } : {}));
   };
 
+  const drawTransition = reduceMotion ? INSTANT : SMOOTH_SPRING;
   const handleDraw = async (selectedParticipantIds: string[]) => {
     if (!participants) return;
 
-    // Fade out the DevStaff logo as winner cards move to center
     devStaffCardControls.start({
       opacity: 0,
-      transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
+      transition: reduceMotion ? INSTANT : { duration: 0.5, ease: [0.22, 1, 0.36, 1] }
     });
 
-    // Move all non-selected cards outside of the viewport (staggered)
     await controls.start(i =>
       !selectedParticipantIds.includes(participants[i].id)
         ? {
             ...selectRandomPointOutsideViewport(),
-            transition: { ...SMOOTH_SPRING, delay: (i / participants.length) * 2.8 }
+            transition: { ...drawTransition, delay: reduceMotion ? 0 : (i / participants.length) * 2.8 }
           }
         : {}
     );
 
-    // Move all selected cards to the center (staggered for fluid cascade)
     const winnerIndices = selectedParticipantIds.map(id => participants.findIndex(p => p.id === id));
     await controls.start(i =>
       selectedParticipantIds.includes(participants[i].id)
         ? {
             x: 0,
             y: 0,
-            transition: { ...SMOOTH_SPRING, delay: winnerIndices.indexOf(i) * 0.08 }
+            transition: { ...drawTransition, delay: reduceMotion ? 0 : winnerIndices.indexOf(i) * 0.08 }
           }
         : {}
     );
 
-    // Spread selected cards (staggered, overlapping with move-to-center feel)
     await controls.start(i =>
       selectedParticipantIds.includes(participants[i].id)
         ? {
@@ -224,7 +221,7 @@ const Draw = () => {
               (selectedParticipantIds.indexOf(participants[i].id) - (selectedParticipantIds.length - 1) / 2) *
               (CARD_WIDTH + 32),
             rotate: getRandomAngle(5),
-            transition: { ...SMOOTH_SPRING, delay: winnerIndices.indexOf(i) * 0.06 }
+            transition: { ...drawTransition, delay: reduceMotion ? 0 : winnerIndices.indexOf(i) * 0.06 }
           }
         : {}
     );
